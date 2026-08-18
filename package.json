@@ -1,0 +1,31 @@
+{
+  "name": "hutan-pinus-pengger-guide",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Independent visitor information guide for Hutan Pinus Pengger, Bantul.",
+  "type": "module",
+  "packageManager": "pnpm@10.4.1",
+  "engines": {
+    "node": "22.13.0",
+    "pnpm": "10.4.1"
+  },
+  "scripts": {
+    "dev": "pnpm build && astro preview --host 0.0.0.0",
+    "build": "astro build && python3 scripts/copy-assets.py",
+    "check": "astro check",
+    "preview": "astro preview",
+    "deploy": "pnpm build && wrangler deploy"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.3",
+    "@tailwindcss/vite": "4.3.3",
+    "astro": "7.2.2",
+    "tailwindcss": "4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@types/node": "26.2.0",
+    "typescript": "6.0.3",
+    "wrangler": "4.123.0"
+  }
+}
