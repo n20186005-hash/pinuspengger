@@ -1,0 +1,25 @@
+---
+// DESIGN REMINDER — the footer remains an ethical field-note closure: no commercial endorsement, no generic link pile, only clear independent-guide paths.
+type Props = { lang: "id" | "en" };
+const { lang } = Astro.props;
+const en = lang === "en";
+const prefix = en ? "/en" : "";
+const copy = en ? {
+  label: "independent visitor guide",
+  statement: "An independent, non-profit visitor information guide. This project is not affiliated with the site operator, government agencies, or any commercial organisation.",
+  privacy: "Privacy", terms: "Terms", cookies: "Cookie settings",
+  copyright: "© 2026 Pinus Pengger Guide · Bantul Regency, Special Region of Yogyakarta"
+} : {
+  label: "panduan pengunjung independen",
+  statement: "Panduan informasi pengunjung yang independen dan non-profit. Proyek ini tidak berafiliasi dengan pengelola lokasi, instansi pemerintah, atau organisasi komersial mana pun.",
+  privacy: "Privasi", terms: "Ketentuan", cookies: "Pengaturan cookie",
+  copyright: "© 2026 Pinus Pengger Guide · Kabupaten Bantul, Daerah Istimewa Yogyakarta"
+};
+---
+
+<footer>
+  <div class="footer-brand"><img src="/assets/pinus-pengger-logo.png" alt="" width="48" height="48" /><span>PINUS PENGGER<br /><small>{copy.label}</small></span></div>
+  <p>{copy.statement}</p>
+  <div class="footer-links"><a href={`${prefix}/privacy`}>{copy.privacy}</a><a href={`${prefix}/terms`}>{copy.terms}</a><a href={`${prefix}/cookies`}>{copy.cookies}</a></div>
+  <p class="copyright">{copy.copyright}</p>
+</footer>

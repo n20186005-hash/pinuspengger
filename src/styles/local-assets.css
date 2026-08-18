@@ -1,0 +1,2 @@
+/* DESIGN REMINDER — use packaged landmark assets first: real photographs lead the landscape narrative and no runtime image host is required. */
+.hero-photo{background-image:url('/assets/pinus-pengger-hand.webp')}.visit-texture{background-image:linear-gradient(90deg,rgba(31,58,50,.94),rgba(31,58,50,.58)),url('/assets/pinus-pengger-route-pattern.webp')}

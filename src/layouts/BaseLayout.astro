@@ -1,0 +1,51 @@
+---
+// DESIGN REMINDER — "Pinus Pengger Guide / Pohon Penanda": regional-modernist, low-contrast mist ground, pine-green editorial typography, resin-gold functional accents, no generic tourism UI.
+import "../styles/global.css";
+import "../styles/landscape-overrides.css";
+import "../styles/local-assets.css";
+import "../styles/professional-guide.css";
+
+type Props = {
+  title: string;
+  description: string;
+  lang?: "id" | "en";
+};
+
+const { title, description, lang = "id" } = Astro.props;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const isEnglish = lang === "en";
+const idPath = isEnglish ? Astro.url.pathname.replace(/^\/en(?=\/|$)/, "") || "/" : Astro.url.pathname;
+const enPath = isEnglish ? Astro.url.pathname : (Astro.url.pathname === "/" ? "/en/" : `/en${Astro.url.pathname}`);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#1f3a32" />
+    <meta name="color-scheme" content="light" />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="alternate" hreflang="id" href={idPath} />
+    <link rel="alternate" hreflang="en" href={enPath} />
+    <link rel="alternate" hreflang="x-default" href={idPath} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content="/assets/pinus-pengger-hand.webp" />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,36 @@
+---
+// DESIGN REMINDER — consent is a calm, direct utility: show no modal, use plain language, and link to the standalone settings page.
+type Props = { lang: "id" | "en" };
+const { lang } = Astro.props;
+const en = lang === "en";
+const prefix = en ? "/en" : "";
+const copy = en ? {
+  body: "This guide uses essential storage. Google Analytics loads only after your consent.",
+  reject: "Decline analytics", accept: "Allow analytics", settings: "Cookie settings"
+} : {
+  body: "Panduan ini menggunakan penyimpanan esensial. Google Analytics hanya dimuat setelah persetujuan Anda.",
+  reject: "Tolak analitik", accept: "Izinkan analitik", settings: "Pengaturan cookie"
+};
+---
+
+<div class="cookie-banner" data-cookie-banner hidden><p><strong>{en ? "Cookies, by choice." : "Cookie, sesuai pilihan Anda."}</strong> {copy.body} <a href={`${prefix}/cookies`}>{copy.settings}</a></p><div><button class="cookie-quiet" data-cookie-reject>{copy.reject}</button><button class="cookie-accept" data-cookie-accept>{copy.accept}</button></div></div>
+<script is:inline>
+  const cookieBanner = document.querySelector('[data-cookie-banner]');
+  const preference = localStorage.getItem('ppg-analytics');
+  const loadAnalytics = () => {
+    if (document.querySelector('[data-ga4]')) return;
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=G-HXM22WWPKP';
+    script.dataset.ga4 = 'true';
+    document.head.appendChild(script);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ window.dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-HXM22WWPKP', { anonymize_ip: true });
+  };
+  if (preference === 'accepted') loadAnalytics();
+  else if (!preference && cookieBanner) cookieBanner.hidden = false;
+  document.querySelector('[data-cookie-accept]')?.addEventListener('click', () => { localStorage.setItem('ppg-analytics', 'accepted'); if (cookieBanner) cookieBanner.hidden = true; loadAnalytics(); });
+  document.querySelector('[data-cookie-reject]')?.addEventListener('click', () => { localStorage.setItem('ppg-analytics', 'rejected'); if (cookieBanner) cookieBanner.hidden = true; });
+</script>
