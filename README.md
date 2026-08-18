@@ -12,7 +12,7 @@ pnpm check
 pnpm build
 ```
 
-ZIP 解压后请保留 `content-based-site/` 与同级的 `webdev-static-assets/pinus-pengger-delivery/` 目录关系。构建脚本会将其中已压缩的照片、品牌徽记和装饰图复制到 `dist/assets/`，因此生产产物不依赖运行时图片外链。
+照片、品牌徽记与装饰图统一放在 `public/assets/`（例如 `public/assets/pinus-pengger-hand.webp`）。Astro 构建时会自动把 `public/` 原样复制到 `dist/`，因此 `dist/assets/` 直接可用，生产产物不依赖运行时图片外链，也不需要任何额外的复制脚本。
 
 ## Domain dan sitemap
 
