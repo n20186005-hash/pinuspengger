@@ -4,6 +4,7 @@ import "../styles/global.css";
 import "../styles/landscape-overrides.css";
 import "../styles/local-assets.css";
 import "../styles/professional-guide.css";
+import { SITE_NAME } from "../data/site";
 
 type Props = {
   title: string;
@@ -12,10 +13,10 @@ type Props = {
 };
 
 const { title, description, lang = "id" } = Astro.props;
-const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const isEnglish = lang === "en";
-const idPath = isEnglish ? Astro.url.pathname.replace(/^\/en(?=\/|$)/, "") || "/" : Astro.url.pathname;
-const enPath = isEnglish ? Astro.url.pathname : (Astro.url.pathname === "/" ? "/en/" : `/en${Astro.url.pathname}`);
+const idPath = new URL(isEnglish ? Astro.url.pathname.replace(/^\/en(?=\/|$)/, "") || "/" : Astro.url.pathname, Astro.site).href;
+const enPath = new URL(isEnglish ? Astro.url.pathname : (Astro.url.pathname === "/" ? "/en/" : `/en${Astro.url.pathname}`), Astro.site).href;
 ---
 
 <!doctype html>
@@ -26,7 +27,7 @@ const enPath = isEnglish ? Astro.url.pathname : (Astro.url.pathname === "/" ? "/
     <meta name="description" content={description} />
     <meta name="theme-color" content="#1f3a32" />
     <meta name="color-scheme" content="light" />
-    {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="id" href={idPath} />
     <link rel="alternate" hreflang="en" href={enPath} />
     <link rel="alternate" hreflang="x-default" href={idPath} />
@@ -38,10 +39,13 @@ const enPath = isEnglish ? Astro.url.pathname : (Astro.url.pathname === "/" ? "/
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME[lang]} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content="/assets/pinus-pengger-hand.webp" />
-    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={isEnglish ? "en_US" : "id_ID"} />
+    <meta property="og:locale:alternate" content={isEnglish ? "id_ID" : "en_US"} />
     <meta name="twitter:card" content="summary_large_image" />
     <title>{title}</title>
   </head>

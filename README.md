@@ -16,13 +16,13 @@ pnpm build
 
 ## Domain dan sitemap
 
-Satu-satunya konfigurasi domain berada di `SITE_URL` pada `astro.config.mjs`. Biarkan kosong sebelum domain tersedia; build tetap berhasil dan tag absolut akan dihilangkan. Saat domain sudah tersedia, gunakan misalnya:
+Domain produksi sudah ditetapkan tetap di `astro.config.mjs` (`https://pinuspengger.com`), sehingga tag kanonik, URL absolut Open Graph, dan `sitemap-index.xml` selalu dihasilkan saat build. Untuk menimpa ke domain lain saat build, gunakan variabel `SITE_URL`:
 
 ```bash
 SITE_URL=https://contoh-domain-anda.id pnpm build
 ```
 
-Integrasi `@astrojs/sitemap` hanya aktif ketika `SITE_URL` diatur. Sitemap tidak menulis `lastmod` buatan.
+Integrasi `@astrojs/sitemap` selalu aktif karena `site` selalu terdefinisi. Sitemap tidak menulis `lastmod` buatan. Pastikan `public/robots.txt` menunjuk ke `sitemap-index.xml` dan `public/_headers` mengirim HSTS serta header keamanan.
 
 ## Cloudflare Workers Static Assets
 

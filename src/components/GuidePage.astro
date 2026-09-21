@@ -3,14 +3,15 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteFooter from "./SiteFooter.astro";
 import CookieBanner from "./CookieBanner.astro";
+import { SITE_NAME } from "../data/site";
 
 type Props = { lang: "id" | "en" };
 const { lang } = Astro.props;
 const en = lang === "en";
 const prefix = en ? "/en" : "";
 const alternate = en ? "/" : "/en/";
-const title = en ? "Pinus Pengger Guide — Dlingo, Bantul" : "Panduan Pinus Pengger — Dlingo, Bantul";
-const description = en ? "An independent, non-profit field guide to Hutan Pinus Pengger in Dlingo, Bantul." : "Panduan lapangan independen dan non-profit untuk Hutan Pinus Pengger di Dlingo, Bantul.";
+const title = SITE_NAME[lang];
+const description = en ? "Independent guide to Hutan Pinus Pengger in Dlingo, Bantul: entry fee, opening hours, how to get there, the giant hand viewpoint and the Yogyakarta city night view." : "Panduan independen Hutan Pinus Pengger di Dlingo, Bantul: harga tiket, jam buka, cara ke sana, spot tangan raksasa, dan pemandangan malam Yogyakarta.";
 const siteUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 
 const c = en ? {
@@ -41,7 +42,7 @@ const c = en ? {
   sourceKicker: "SUMBER & BATAS EDITORIAL", sourceTitle: "Disiapkan untuk membantu merencanakan—<br />bukan menggantikan <em>konfirmasi setempat.</em>", sourceText: "Konteks tempat dan fasilitas yang tercantum mengacu pada halaman publik Kalurahan Terong dan Kabupaten Bantul. Konteks angkutan mengacu pada informasi Trans Jogja Dinas Perhubungan DIY. Catatan perjalanan non-resmi hanya digunakan sebagai konteks sekunder. Penilaian publik, biaya, jam, cuaca, dan layanan bersifat dinamis.", sourceLast: "Sebelum setiap kunjungan, konfirmasi kondisi keselamatan, akses, harga, cuaca, dan operasional kepada pengelola atau saluran resmi terkait."
 };
 
-const attractionSchema = { "@context": "https://schema.org", "@type": ["TouristAttraction", "LocalBusiness"], name: "Hutan Pinus Pengger", alternateName: "Pinus Pengger", description, ...(siteUrl ? { url: siteUrl } : {}), image: "/assets/pinus-pengger-hand.webp", address: { "@type": "PostalAddress", streetAddress: "Jl. Dlingo–Patuk, Sendangsari, Terong, Kec. Dlingo", addressLocality: "Kabupaten Bantul", addressRegion: "Daerah Istimewa Yogyakarta", postalCode: "55783", addressCountry: "ID" }, geo: { "@type": "GeoCoordinates", latitude: -7.8711987782691635, longitude: 110.45693947692344 }, openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], opens: "08:00", closes: "21:00" }], aggregateRating: { "@type": "AggregateRating", ratingValue: "4.5", bestRating: "5", reviewCount: "26191" }, priceRange: "Rp5.000–Rp20.000" };
+const attractionSchema = { "@context": "https://schema.org", "@type": ["TouristAttraction", "LocalBusiness"], name: "Hutan Pinus Pengger", alternateName: "Pinus Pengger", description, url: siteUrl, image: "/assets/pinus-pengger-hand.webp", address: { "@type": "PostalAddress", streetAddress: "Jl. Dlingo–Patuk, Sendangsari, Terong, Kec. Dlingo", addressLocality: "Kabupaten Bantul", addressRegion: "Daerah Istimewa Yogyakarta", postalCode: "55783", addressCountry: "ID" }, geo: { "@type": "GeoCoordinates", latitude: -7.8711987782691635, longitude: 110.45693947692344 }, hasMap: "https://www.google.com/maps/search/?api=1&query=Hutan%20Pinus%20Pengger%20Bantul", openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], opens: "08:00", closes: "21:00" }], priceRange: "Rp5.000–Rp20.000" };
 const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: c.faq.map(([name, text]) => ({ "@type": "Question", name, acceptedAnswer: { "@type": "Answer", text } })) };
 ---
 

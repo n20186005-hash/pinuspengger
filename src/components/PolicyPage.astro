@@ -3,6 +3,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteFooter from "./SiteFooter.astro";
 import CookieBanner from "./CookieBanner.astro";
+import { SITE_NAME } from "../data/site";
 type Props = { lang: "id" | "en"; page: "privacy" | "terms" | "cookies" };
 const { lang, page } = Astro.props;
 const en = lang === "en";
@@ -22,7 +23,7 @@ const copy = en ? {
 const [heading, intro, sections] = copy[page] as [string, string, Array<[string, string]>];
 ---
 
-<BaseLayout title={`${heading} — Pinus Pengger`} description={intro} lang={lang}>
+<BaseLayout title={`${heading} | ${SITE_NAME[lang]}`} description={intro} lang={lang}>
   <header class="policy-header"><a class="brand policy-brand" href={home}><img src="/assets/pinus-pengger-logo.png" alt="" width="48" height="48" /><span><strong>PINUS PENGGER</strong><small>{en ? "independent visitor guide" : "panduan pengunjung independen"}</small></span></a><div><a class="language-link dark" href={`${other}${page === "privacy" ? "privacy" : page === "terms" ? "terms" : "cookies"}`} hreflang={en ? "id" : "en"}>{copy.locale}</a><a class="policy-back" href={home}>← {copy.back}</a></div></header>
   <main class="policy-page"><p class="eyebrow"><span></span> {en ? "INDEPENDENT GUIDE POLICY" : "KEBIJAKAN PANDUAN INDEPENDEN"}</p><h1>{heading}</h1><p class="policy-intro">{intro}</p><div class="policy-toc"><a href="#section-1">01</a><a href="#section-2">02</a><a href="#section-3">03</a><a href="#section-4">04</a></div><div class="policy-content">{sections.map(([sectionTitle, text], index) => <section id={`section-${index + 1}`}><span>0{index + 1}</span><div><h2>{sectionTitle}</h2><p>{text}</p></div></section>)}</div>{page === "cookies" && <section class="cookie-control" aria-labelledby="cookie-control-title"><p class="eyebrow"><span></span> {copy.status}</p><h2 id="cookie-control-title">{en ? "Set analytics deliberately." : "Atur analitik dengan sadar."}</h2><div class="cookie-choice"><button data-choice="accepted">{copy.allow}</button><button data-choice="rejected">{copy.decline}</button></div><p data-choice-status data-allowed={en ? "Analytics: allowed" : "Analitik: diizinkan"} data-declined={en ? "Analytics: declined" : "Analitik: ditolak"}></p><p><button class="choice-save" data-choice-save>{copy.save}</button></p></section>}</main>
   <SiteFooter lang={lang} />
