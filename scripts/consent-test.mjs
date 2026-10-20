@@ -1,0 +1,28 @@
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const source = readFileSync('src/components/CookieBanner.astro', 'utf8').match(/<script is:inline>([\s\S]*?)<\/script>/)[1];
+const nodes = new Map();
+const node = id => {
+  if (!nodes.has(id)) nodes.set(id, { hidden: true, dataset: { storageError: 'not saved', saved: 'saved' }, events: {}, addEventListener(event, fn) { this.events[event] = fn; } });
+  return nodes.get(id);
+};
+const events = {};
+const loaded = [];
+const context = { CustomEvent: class { constructor(type, options) { this.type = type; this.detail = options.detail; } }, window: { addEventListener: (name, fn) => events[name] = fn, dispatchEvent: event => events[event.type]?.(event) }, localStorage: { getItem() { throw Error('blocked'); }, setItem() { throw Error('blocked'); } }, document: { querySelector: key => key === '[data-ga4]' ? loaded[0] : node(key), querySelectorAll: () => [node('status')], createElement: () => ({ dataset: {} }), head: { appendChild: s => loaded.push(s) } } };
+vm.runInNewContext(source, context);
+assert.equal(context.window['ga-disable-G-HXM22WWPKP'], true);
+assert.equal(loaded.length, 0);
+assert.equal(node('[data-cookie-banner]').hidden, false);
+node('[data-cookie-accept]').events.click();
+assert.equal(context.window['ga-disable-G-HXM22WWPKP'], false);
+assert.equal(loaded.length, 1);
+assert.equal(node('status').textContent, 'not saved');
+events['ppg-consent']({ detail: 'rejected' });
+assert.equal(context.window['ga-disable-G-HXM22WWPKP'], true);
+events['ppg-consent']({ detail: 'accepted' });
+assert.equal(context.window['ga-disable-G-HXM22WWPKP'], false);
+node('[data-cookie-reject]').events.click();
+assert.equal(context.window['ga-disable-G-HXM22WWPKP'], true);
+assert.equal(loaded.length, 1);
+console.log('Consent: storage exceptions, banner choices, settings events, and immediate rejection passed.');

@@ -9,7 +9,7 @@ const site = process.env.SITE_URL || "https://pinuspengger.com";
 export default defineConfig({
   site,
   output: "static",
-  integrations: [sitemap()],
+  integrations: [sitemap({ filter: (page) => !page.endsWith("/404/") })],
   vite: {
     plugins: [tailwindcss()],
     server: {

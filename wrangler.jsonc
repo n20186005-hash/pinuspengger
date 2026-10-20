@@ -1,8 +1,11 @@
 {
-  "name": "hutan-pinus-pengger-guide",
+  "name": "pinuspengger",
+  "main": "src/worker.ts",
   "compatibility_date": "2026-08-18",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": true,
     "not_found_handling": "404-page"
   }
 }
