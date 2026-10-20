@@ -12,7 +12,7 @@ pnpm check
 pnpm build
 ```
 
-照片、品牌徽记与装饰图统一放在 `public/assets/`（例如 `public/assets/pinus-pengger-hand.webp`）。Astro 构建时会自动把 `public/` 原样复制到 `dist/`，因此 `dist/assets/` 直接可用，生产产物不依赖运行时图片外链，也不需要任何额外的复制脚本。
+参考图片、品牌徽记与装饰图统一放在 `public/assets/`（例如 `public/assets/pinus-pengger-hand.webp`）。Astro 构建时会自动把 `public/` 原样复制到 `dist/`，因此 `dist/assets/` 直接可用，生产产物不依赖运行时图片外链，也不需要任何额外的复制脚本。
 
 ## Domain dan sitemap
 
