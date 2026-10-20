@@ -3,7 +3,6 @@
 // Wrangler Static Assets (wrangler.jsonc) uses "not_found_handling": "404-page",
 // which requires dist/404.html to exist at deploy time.
 const en = Astro.url.pathname.startsWith("/en/");
-const home = en ? "/en/" : "/";
 ---
 <!doctype html>
 <html lang={en ? "en" : "id"}>
@@ -11,14 +10,14 @@ const home = en ? "/en/" : "/";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>404 · Pinus Pengger</title>
-    <meta name="robots" content="noindex" />
+    <meta name="robots" content="noindex,follow" />
     <style>
       body{margin:0;font-family:system-ui,sans-serif;background:#1f3a32;color:#f4efe6;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center}
       .wrap{padding:2rem;max-width:34rem}
       .code{font-size:4rem;font-weight:700;margin:0;letter-spacing:.08em;color:#c8a96a}
       h1{font-size:1.25rem;margin:.5rem 0 1rem}
       p{opacity:.85}
-      a{color:#c8a96a;text-decoration:underline}
+      a{color:#c8a96a;text-decoration:underline;display:inline-flex;align-items:center;min-height:44px;margin:.5rem}
     </style>
   </head>
   <body>
@@ -26,7 +25,7 @@ const home = en ? "/en/" : "/";
       <p class="code">404</p>
       <h1>{en ? "Page not found" : "Halaman tidak ditemukan"}</h1>
       <p>{en ? "Return to the Pinus Pengger guide." : "Kembali ke panduan Pinus Pengger."}</p>
-      <a href={home}>← {en ? "Back to home" : "Kembali ke beranda"}</a>
+      <a href="/">← Panduan Bahasa Indonesia</a><a href="/en/" lang="en">English guide →</a>
     </main>
   </body>
 </html>

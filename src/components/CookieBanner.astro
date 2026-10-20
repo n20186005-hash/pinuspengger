@@ -13,24 +13,42 @@ const copy = en ? {
 };
 ---
 
-<div class="cookie-banner" data-cookie-banner hidden><p><strong>{en ? "Cookies, by choice." : "Cookie, sesuai pilihan Anda."}</strong> {copy.body} <a href={`${prefix}/cookies`}>{copy.settings}</a></p><div><button class="cookie-quiet" data-cookie-reject>{copy.reject}</button><button class="cookie-accept" data-cookie-accept>{copy.accept}</button></div></div>
+<div class="cookie-banner" data-cookie-banner data-storage-error={en ? "Choice applies to this page; your browser could not save it for later visits." : "Pilihan berlaku pada halaman ini; peramban tidak dapat menyimpannya untuk kunjungan berikutnya."} data-saved={en ? "Choice saved." : "Pilihan disimpan."} hidden><p><strong>{en ? "Cookies, by choice." : "Cookie, sesuai pilihan Anda."}</strong> {copy.body} <a href={`${prefix}/cookies`}>{copy.settings}</a></p><div><button class="cookie-quiet" data-cookie-reject>{copy.reject}</button><button class="cookie-accept" data-cookie-accept>{copy.accept}</button></div><p data-cookie-status role="status" aria-live="polite"></p></div>
 <script is:inline>
-  const cookieBanner = document.querySelector('[data-cookie-banner]');
-  const preference = localStorage.getItem('ppg-analytics');
-  const loadAnalytics = () => {
-    if (document.querySelector('[data-ga4]')) return;
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = 'https://www.googletagmanager.com/gtag/js?id=G-HXM22WWPKP';
-    script.dataset.ga4 = 'true';
-    document.head.appendChild(script);
+(() => {
+  const banner = document.querySelector('[data-cookie-banner]');
+  const GA_ID = 'G-HXM22WWPKP';
+  let preference = null;
+  try { preference = localStorage.getItem('ppg-analytics'); } catch {}
+  const applyAnalytics = (enabled) => {
+    window['ga-disable-' + GA_ID] = !enabled;
+    if (!enabled || document.querySelector('[data-ga4]')) return;
     window.dataLayer = window.dataLayer || [];
     function gtag(){ window.dataLayer.push(arguments); }
+    window.gtag = gtag;
     gtag('js', new Date());
-    gtag('config', 'G-HXM22WWPKP', { anonymize_ip: true });
+    gtag('config', GA_ID, { anonymize_ip: true });
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+    script.dataset.ga4 = 'true';
+    document.head.appendChild(script);
   };
-  if (preference === 'accepted') loadAnalytics();
-  else if (!preference && cookieBanner) cookieBanner.hidden = false;
-  document.querySelector('[data-cookie-accept]')?.addEventListener('click', () => { localStorage.setItem('ppg-analytics', 'accepted'); if (cookieBanner) cookieBanner.hidden = true; loadAnalytics(); });
-  document.querySelector('[data-cookie-reject]')?.addEventListener('click', () => { localStorage.setItem('ppg-analytics', 'rejected'); if (cookieBanner) cookieBanner.hidden = true; });
+  const choose = (choice) => {
+    applyAnalytics(choice === 'accepted');
+    let saved = false;
+    try { localStorage.setItem('ppg-analytics', choice); saved = true; } catch {}
+    if (banner) banner.hidden = saved;
+    window.dispatchEvent(new CustomEvent('ppg-consent-changed', { detail: choice }));
+    const message = saved ? banner?.dataset.saved : banner?.dataset.storageError;
+    for (const status of document.querySelectorAll('[data-cookie-status], [data-save-status]')) {
+      status.textContent = message || '';
+    }
+  };
+  applyAnalytics(preference === 'accepted');
+  if (preference !== 'accepted' && preference !== 'rejected' && banner) banner.hidden = false;
+  document.querySelector('[data-cookie-accept]')?.addEventListener('click', () => choose('accepted'));
+  document.querySelector('[data-cookie-reject]')?.addEventListener('click', () => choose('rejected'));
+  window.addEventListener('ppg-consent', (event) => choose(event.detail === 'accepted' ? 'accepted' : 'rejected'));
+})();
 </script>

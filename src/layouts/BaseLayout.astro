@@ -42,7 +42,7 @@ const enPath = new URL(isEnglish ? Astro.url.pathname : (Astro.url.pathname === 
     <meta property="og:site_name" content={SITE_NAME[lang]} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content="/assets/pinus-pengger-hand.webp" />
+    <meta property="og:image" content={new URL("/assets/pinus-pengger-hand.webp", Astro.site).href} />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={isEnglish ? "en_US" : "id_ID"} />
     <meta property="og:locale:alternate" content={isEnglish ? "id_ID" : "en_US"} />
