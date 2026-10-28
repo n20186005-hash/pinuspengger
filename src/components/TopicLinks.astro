@@ -1,0 +1,68 @@
+---
+import type { Lang } from "../data/site";
+import type { TopicGroup } from "../data/topic-types";
+import { TOPICS, topicPath, TOPIC_GROUP_LABELS } from "../data/topics";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const isEn = lang === "en";
+const groupOrder: TopicGroup[] = ["core", "access", "experience", "food", "nearby", "itinerary", "background"];
+const byGroup = groupOrder
+  .map((g) => ({ group: g, label: TOPIC_GROUP_LABELS[g][lang], topics: TOPICS.filter((t) => t.group === g) }))
+  .filter((g) => g.topics.length > 0);
+---
+
+<section class="topic-index" id="guides">
+  <h2>{isEn ? "All Pinus Pengger guides" : "Seluruh panduan Pinus Pengger"}</h2>
+  <p class="topic-index-lede">
+    {
+      isEn
+        ? "Practical, independently researched guides covering planning, access, experiences, food, nearby spots and itineraries."
+        : "Panduan praktis hasil riset independen tentang perencanaan, akses, pengalaman, kuliner, tempat dekat, dan itinerari."
+    }
+  </p>
+  {
+    byGroup.map((g) => (
+      <div class="topic-index-group">
+        <h3>{g.label}</h3>
+        <div class="topic-index-grid">
+          {g.topics.map((t) => {
+            const c = lang === "en" ? t.en : t.id;
+            return (
+              <a class="topic-index-card" href={topicPath(t.slug, lang)}>
+                <span class="ti-name">{c.name}</span>
+                <span class="ti-desc">{c.metaDescription}</span>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    ))
+  }
+</section>
+
+<style>
+  .topic-index { max-width: 980px; margin: 0 auto; padding: 2.5rem clamp(1rem, 4vw, 2rem); }
+  .topic-index h2 { font-size: clamp(1.4rem, 3.5vw, 2rem); letter-spacing: -0.02em; margin: 0 0 0.5rem; }
+  .topic-index-lede { color: #57534e; margin: 0 0 1.5rem; }
+  .topic-index-group { margin: 0 0 1.8rem; }
+  .topic-index-group h3 {
+    font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.07em;
+    color: #c9881f; margin: 0 0 0.8rem;
+  }
+  .topic-index-grid {
+    display: grid; gap: 0.8rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  .topic-index-card {
+    display: flex; flex-direction: column; gap: 0.3rem;
+    background: #fff; border: 1px solid #e7e1d6; border-radius: 14px;
+    padding: 0.95rem 1.05rem; text-decoration: none; color: #1c1917;
+    transition: border-color .15s, transform .15s;
+  }
+  .topic-index-card:hover { border-color: #2f6d4f; transform: translateY(-2px); }
+  .ti-name { font-weight: 600; }
+  .ti-desc { font-size: 0.85rem; color: #57534e; line-height: 1.45; }
+</style>

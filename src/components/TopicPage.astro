@@ -1,0 +1,206 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteFooter from "./SiteFooter.astro";
+import CookieBanner from "./CookieBanner.astro";
+import type { Lang } from "../data/site";
+import type { Topic } from "../data/topic-types";
+import { ATTRACTION, SITE_NAME, PRIMARY_SOURCES } from "../data/site";
+import { topicLabel, topicPath, canonicalSlug } from "../data/topics";
+import "../styles/topic-page.css";
+
+interface Props {
+  topic: Topic;
+  lang: Lang;
+}
+const { topic, lang } = Astro.props;
+const content = lang === "en" ? topic.en : topic.id;
+const isEn = lang === "en";
+const slug = topic.slug;
+const url = isEn ? `https://pinuspengger.com/en/${slug}` : `https://pinuspengger.com/${slug}`;
+const homeUrl = isEn ? "https://pinuspengger.com/en/" : "https://pinuspengger.com/";
+const homeLabel = isEn ? "Home" : "Beranda";
+const otherLang: Lang = isEn ? "id" : "en";
+
+// BreadcrumbList + WebPage + FAQPage (topic pages do not reuse the homepage's
+// TouristAttraction; schema stays specific to the article).
+const breadcrumbId = `${url}#breadcrumb`;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${url}#webpage`,
+      url,
+      name: content.h1,
+      inLanguage: isEn ? "en" : "id",
+      breadcrumb: { "@id": breadcrumbId },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": breadcrumbId,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: homeLabel,
+          item: homeUrl,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: content.name,
+          item: url,
+        },
+      ],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: content.faq.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    },
+  ],
+};
+
+const faqItems = content.faq;
+const relatedItems = content.related
+  .map((r) => {
+    const slug = canonicalSlug(r);
+    return { slug, label: topicLabel(slug, lang), href: topicPath(slug, lang) };
+  })
+  .filter((r) => r.label !== r.slug);
+---
+
+<BaseLayout
+  title={content.metaTitle}
+  description={content.metaDescription}
+  lang={lang}
+>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <div class="topic-shell">
+    <header class="topic-header">
+      <a class="topic-brand" href={homeUrl}>
+        <img class="logo" src="/assets/pinus-pengger-logo.png" alt={isEn ? "Pinus Pengger" : "Pinus Pengger"} width="30" height="30" />
+        <span class="brand-text">
+          {isEn ? "Pinus Pengger" : "Pinus Pengger"}
+          <small>{isEn ? "Yogyakarta Travel Guide" : "Panduan Wisata Yogyakarta"}</small>
+        </span>
+      </a>
+      <nav class="topic-lang" aria-label="Language">
+        <a class={!isEn ? "is-active" : ""} href={topicPath(slug, "id")} hreflang="id">ID</a>
+        <a class={isEn ? "is-active" : ""} href={topicPath(slug, "en")} hreflang="en">EN</a>
+      </nav>
+    </header>
+
+    <nav class="topic-breadcrumb" aria-label="Breadcrumb">
+      <a href={homeUrl}>{homeLabel}</a>
+      <span class="sep">›</span>
+      <span>{content.name}</span>
+    </nav>
+
+    <main class="topic-main">
+      <section class="topic-hero">
+        <p class="eyebrow">{isEn ? "Pinus Pengger Guide" : "Panduan Pinus Pengger"}</p>
+        <h1>{content.h1}</h1>
+        <p class="lede">{content.lead}</p>
+        {
+          topic.image && (
+            <figure class="topic-hero-figure">
+              <img src={topic.image} alt={content.h1} loading="lazy" width="1200" height="675" />
+            </figure>
+          )
+        }
+        <p class="topic-updated">{content.updated}</p>
+      </section>
+
+      {
+        content.facts.length > 0 && (
+          <section class="topic-facts" aria-label={isEn ? "Quick facts" : "Fakta singkat"}>
+            <div class="topic-facts-grid">
+              {content.facts.map(([v, l]) => (
+                <div class="topic-fact">
+                  <div class="v">{v}</div>
+                  <div class="l">{l}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      {
+        content.sections.map((s) => (
+          <section class="topic-section">
+            <p class="eyebrow">{isEn ? "Detail" : "Detail"}</p>
+            <h2>{s.heading}</h2>
+            {s.body?.map((p) => <p>{p}</p>)}
+            {s.bullets && (
+              <ul>
+                {s.bullets.map((b) => (
+                  <li>{b}</li>
+                ))}
+              </ul>
+            )}
+            {s.callout && <div class="callout">{s.callout}</div>}
+          </section>
+        ))
+      }
+
+      <section class="topic-faq">
+        <h2>{isEn ? "Frequently asked questions" : "Pertanyaan yang sering diajukan"}</h2>
+        {
+          faqItems.map((f) => (
+            <details>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))
+        }
+      </section>
+
+      {
+        relatedItems.length > 0 && (
+          <section class="topic-related">
+            <h2>{isEn ? "Explore more guides" : "Jelajahi panduan lain"}</h2>
+            <div class="topic-related-grid">
+              {relatedItems.map((r) => (
+                <a class="topic-related-card" href={r.href} rel="related">
+                  <div class="rc-name">{r.label}</div>
+                  <div class="rc-go">{isEn ? "Read guide →" : "Baca panduan →"}</div>
+                </a>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <section class="topic-source">
+        <div class="disclaimer">
+          {isEn
+            ? `This is an independent, non-profit third-party travel guide for ${ATTRACTION.name}. We are not the official site and do not sell tickets. Information about entry fees, hours and services is not verified; please confirm with on-site staff and official sources before your visit (last checked ${ATTRACTION.ratingCheckedEn}).`
+            : `Ini adalah panduan wisata independen dan non-profit untuk ${ATTRACTION.name}. Kami bukan situs resmi dan tidak menjual tiket. Informasi tiket, jam, dan layanan belum terverifikasi; konfirmasi ke petugas di lokasi dan sumber resmi sebelum berkunjung (terakhir diperiksa ${ATTRACTION.ratingChecked}).`}
+        </div>
+        <p><strong>{isEn ? "Sources" : "Sumber"}</strong></p>
+        <ul>
+          {
+            PRIMARY_SOURCES.map((s) => (
+              <li>
+                <a href={s.url} target="_blank" rel="noopener noreferrer nofollow">{s[lang]}</a>
+              </li>
+            ))
+          }
+        </ul>
+        <p>
+          {isEn
+            ? `Google Maps listing shows ${ATTRACTION.ratingValue}/5 from ${ATTRACTION.reviewCount} reviews (checked ${ATTRACTION.ratingCheckedEn}). This guide does not reproduce individual reviews.`
+            : `Peta Google mencantumkan ${ATTRACTION.ratingValue}/5 dari ${ATTRACTION.reviewCount} ulasan (diperiksa ${ATTRACTION.ratingChecked}). Panduan ini tidak menyalin ulasan individu.`}
+        </p>
+      </section>
+    </main>
+
+    <SiteFooter lang={lang} />
+    <CookieBanner lang={lang} />
+  </div>
+</BaseLayout>
